@@ -5,6 +5,6 @@ s, img = cam.read()
 if s:
     namedWindow("cam-test",CV_WINDOW_AUTOSIZE)
     imshow("cam-test",img)
-    waitKey(0)
+    waitKey(2)
     destroyWindow("cam-test")
-    imwrite("filename.jpg",img)
+    imwrite("face.jpg",img)
