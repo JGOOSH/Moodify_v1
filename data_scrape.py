@@ -2,6 +2,7 @@ import sys
 import requests
 import json
 from authorization import refresh
+from machine_learning.model import calculate_mood
 
 def get_key():
     return refresh()
@@ -59,6 +60,8 @@ def readTracks():
 
     fi.write(str(json.dumps(data_array)))
 
+    calculate_mood()
+
 def readPlayList():
 
     auth_key = get_code()
@@ -109,7 +112,7 @@ def get_playlist(emotion):
     playlist_headers = {"Content_Type" : "application/json", "Authorization" : "Bearer " + auth_key}
     playlist_body = json.dumps({"name":emotions[emotion], "description":"Playlist Built By: HackTX 2017 Emotion-Spotify Playlist Generator"})
     playlist_create_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists", headers=playlist_headers, body=playlist_body)
-    playlist_id = playlist_create_request.json()["id"]
+    playlist_uri = playlist_create_request.json()["uri"]
 
     data_uris = []
 
@@ -134,7 +137,7 @@ def get_playlist(emotion):
     playlist_add_body = json.dumps({"uris": str(data_uris)})
     playlist_add_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists/"+playlist_id+"/tracks", headers=playlist_headers, body=playlist_add_body)
 
-    return playlist_id
+    return playlist_uri
 
 
 
