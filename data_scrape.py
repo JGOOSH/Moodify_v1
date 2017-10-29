@@ -1,31 +1,29 @@
 import sys
 import requests
 import json
-from pymongo import MongoClient
 
 def readTracks():
-    client = MongoClient("mongodb://hacktx2017:hacktx2017alllowercase@ds047762.mlab.com:47762")
-    db = client["emotion_music"]
 
-    fi = open("songs.txt", "a")
+    fi = open("machine_learning/songs.data", "a")
     # fi2 = open("nameIdRelation.txt", "a")
 
     # initial setup, currently using hard-coded authorization
     payload = {"limit" : 50, "offset" : 0}
-    headers = {"Accept" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
+    headers = {"Accept" : "application/json", "Authorization" : "Bearer BQBEG870zuHxUzAThavbx6ZwDKeJ9kMlZpYkg1zpUUTDunuItw1zmhAILxQLgL_vSxhZg_H5zHD5eCNb4Tg9AGK0cb8mBdMRUH2EYINjG4piIIYt9kv5TJ26sf03ZnkAa9Wt2OWBF0msFqn_"}
     track_request = requests.get("https://api.spotify.com/v1/me/tracks", params=payload, headers=headers)
     data = track_request.json()
     total = data["total"]
-    dict_data = []
 
     # run the analysis until reaching the end of the list
+    data_array = []
     while total > 0:
         total -= 50
         for item in data["items"]:
             id = (item["track"]["id"])
 
-            query = db.find({"id": id})
-            if not query:
+            query_headers = {"Content-Type" : "application/json"}
+            query_request = requests.get("https://api.mlab.com/api/1/databases/emotion_music/collections/prediction_data?apiKey=7fjUwhTEJe2ALljJOyn706HsWtIJxvvB&q={\"id\":\""+id+"\"}", headers=query_headers)
+            if len(json.loads(query_request.text)) == 0:
                 name = item["track"]["name"]
                 url = "https://api.spotify.com/v1/audio-features/"
                 url = url + id
@@ -38,22 +36,26 @@ def readTracks():
                     "mode" : feature["mode"],
                     "speechiness" : feature["speechiness"],
                     "tempo" : feature["tempo"],
-                    "valence" : feature["valence"]
+                    "valence" : feature["valence"],
+                    "name" : item["track"]["name"]
                 }
-
-                fi.write(data)
+                data_array.append(data)
                 # fi2.write("id: {} | name: {}\n".format( feature["id"] ,name))
                 # print data
                 # dict_data.append(data)
         if total > 0 :
             payload["offset"] += 50
 
+
         track_request = requests.get("https://api.spotify.com/v1/me/tracks", params=payload, headers=headers)
         data = track_request.json()
 
+
+    fi.write(str(json.dumps(data_array)))
+
 def readPlayList():
-    f2 = open("playlist_songs.txt", "a")
-    fi2 = open("nameIdRelation.txt", "a")
+    f2 = open("machine_learning/playlist_songs.data", "a")
+    fi2 = open("machine_learning/nameIdRelation.data", "a")
     url = "https://api.spotify.com/v1/users/" + "lockijazz" +"/playlists/"  + "0KxCwQWV2dag4n81XQNu2K" + "/tracks"
     headers = {"Accept" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
     payload = {"limit" : 50}
@@ -82,8 +84,6 @@ def readPlayList():
 
 
 def get_playlist(emotion):
-    client = MongoClient('mongodb://hacktx2017:hacktx2017alllowercase@ds047762.mlab.com:47762')
-    db = client['emotion_music']
 
     # initial setup, currently using hard-coded authorization
     payload = {"limit" : 50, "offset" : 0}
@@ -109,8 +109,9 @@ def get_playlist(emotion):
         for item in data["items"]:
             id = (item["track"]["id"])
 
-            query = db.find({ $and: [{"id": id}, {"emotion": emotion}]})
-            if query is not None:
+            query_headers = {"Content-Type" : "application/json"}
+            query_request = requests.get("https://api.mlab.com/api/1/databases/emotion_music/collections/prediction_data?apiKey=7fjUwhTEJe2ALljJOyn706HsWtIJxvvB&q={\"id\":\""+id+"\", \"emotion\":"+emotion+"}", headers=query_headers)
+            if len(json.loads(query_request.text)) > 0:
                 data_uris.append(item["track"]["uri"])
 
 
@@ -123,9 +124,10 @@ def get_playlist(emotion):
     playlist_add_body = json.dumps({"uris": str(data_uris)})
     playlist_add_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists/"+playlist_id+"/tracks", headers=playlist_headers, body=playlist_add_body)
 
-return playlist_id
+    return playlist_id
 
 
 
     # input
     # energy, loudness, mode, speechiness, tempo, valence
+readTracks()
