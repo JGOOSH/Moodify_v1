@@ -97,7 +97,7 @@ def get_playlist(emotion):
 
     user_id = "GOOSH" # change to get it from amans app as well as all the authorization codes
     playlist_headers = {"Content_Type" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
-    playlist_body = json.dumps({"name":emotions, "description":"Playlist Built By: HackTX 2017 Emotion-Spotify Playlist Generator"})
+    playlist_body = json.dumps({"name":emotions[emotion], "description":"Playlist Built By: HackTX 2017 Emotion-Spotify Playlist Generator"})
     playlist_create_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists", headers=playlist_headers, body=playlist_body)
     playlist_id = playlist_create_request.json()["id"]
 
@@ -122,6 +122,8 @@ def get_playlist(emotion):
 
     playlist_add_body = json.dumps({"uris": str(data_uris)})
     playlist_add_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists/"+playlist_id+"/tracks", headers=playlist_headers, body=playlist_add_body)
+
+return playlist_id
 
 
 
