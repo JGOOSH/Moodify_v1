@@ -80,6 +80,3 @@ def calculate_mood():
     #posts.insert_many(post_data)
     headers = {"Content-Type" : "application/json"}
     request = requests.post("https://api.mlab.com/api/1/databases/emotion_music/collections/prediction_data?apiKey=7fjUwhTEJe2ALljJOyn706HsWtIJxvvB", headers=headers, data=json.dumps(post_data))
-
-run_model()
-calculate_mood()

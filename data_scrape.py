@@ -1,15 +1,21 @@
 import sys
 import requests
 import json
+from authorization import refresh
+
+def get_key():
+    return refresh()
 
 def readTracks():
+
+    auth_key = get_code()
 
     fi = open("machine_learning/songs.data", "a")
     # fi2 = open("nameIdRelation.txt", "a")
 
     # initial setup, currently using hard-coded authorization
     payload = {"limit" : 50, "offset" : 0}
-    headers = {"Accept" : "application/json", "Authorization" : "Bearer BQBEG870zuHxUzAThavbx6ZwDKeJ9kMlZpYkg1zpUUTDunuItw1zmhAILxQLgL_vSxhZg_H5zHD5eCNb4Tg9AGK0cb8mBdMRUH2EYINjG4piIIYt9kv5TJ26sf03ZnkAa9Wt2OWBF0msFqn_"}
+    headers = {"Accept" : "application/json", "Authorization" : "Bearer "+auth_key}
     track_request = requests.get("https://api.spotify.com/v1/me/tracks", params=payload, headers=headers)
     data = track_request.json()
     total = data["total"]
@@ -54,10 +60,12 @@ def readTracks():
     fi.write(str(json.dumps(data_array)))
 
 def readPlayList():
+
+    auth_key = get_code()
     f2 = open("machine_learning/playlist_songs.data", "a")
     fi2 = open("machine_learning/nameIdRelation.data", "a")
     url = "https://api.spotify.com/v1/users/" + "lockijazz" +"/playlists/"  + "0KxCwQWV2dag4n81XQNu2K" + "/tracks"
-    headers = {"Accept" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
+    headers = {"Accept" : "application/json", "Authorization" : "Bearer " + auth_key}
     payload = {"limit" : 50}
     playlist_request = requests.get(url, headers = headers, params=payload)
     data = playlist_request.json()
@@ -85,9 +93,11 @@ def readPlayList():
 
 def get_playlist(emotion):
 
+    auth_key = get_code()
+
     # initial setup, currently using hard-coded authorization
     payload = {"limit" : 50, "offset" : 0}
-    headers = {"Accept" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
+    headers = {"Accept" : "application/json", "Authorization" : "Bearer " + auth_key}
     track_request = requests.get("https://api.spotify.com/v1/me/tracks", params=payload, headers=headers)
     data = track_request.json()
     total = data["total"]
@@ -96,7 +106,7 @@ def get_playlist(emotion):
     emotions = ["Happy", "Sad", "Hyped", "Calm"]
 
     user_id = "GOOSH" # change to get it from amans app as well as all the authorization codes
-    playlist_headers = {"Content_Type" : "application/json", "Authorization" : "Bearer BQDzXQpM_-E0BdfJc7mk3-DB6ssteVA0OU9_PjCUeXrhKsLwPq49fUPUHGoAXCgk_vAmpkpMkDUDgwPQHkiysCC9RjITr79S0ltuTyCilHsowBzTenqxExLmOTITvj0Jfh_XEo3pJ3-c3qz1lkvYm2yeiGy8epdcc5Q"}
+    playlist_headers = {"Content_Type" : "application/json", "Authorization" : "Bearer " + auth_key}
     playlist_body = json.dumps({"name":emotions[emotion], "description":"Playlist Built By: HackTX 2017 Emotion-Spotify Playlist Generator"})
     playlist_create_request = requests.post("https://api.spotify.com/v1/users/"+user_id+"/playlists", headers=playlist_headers, body=playlist_body)
     playlist_id = playlist_create_request.json()["id"]
@@ -130,4 +140,3 @@ def get_playlist(emotion):
 
     # input
     # energy, loudness, mode, speechiness, tempo, valence
-readTracks()
