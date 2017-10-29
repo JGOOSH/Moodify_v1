@@ -1,2 +1,2 @@
-# Stock_Visualization
+# Moodify
 HackTX 2017
