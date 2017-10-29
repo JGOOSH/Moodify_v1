@@ -10,7 +10,7 @@ params = urllib.urlencode({
 })
 
 # Replace the example URL below with the URL of the image you want to analyze.
-body = "{ 'url': 'https://s3.us-east-2.amazonaws.com/faceidphoto110223/22137056_422818101467061_8326694298811974091_o.jpg' }"
+body = "{ 'url': 'https://s3.us-east-2.amazonaws.com/azureemotion992/face.jpg' }"
 
 try:
     # NOTE: You must use the same region in your REST call as you used to obtain your subscription keys.
