@@ -8,3 +8,4 @@ if s:
     waitKey(2)
     destroyWindow("cam-test")
     imwrite("face.jpg",img)
+    cam.release
