@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "data_scrape.py", line 33, in <module>
+    with open("nameIdRelation.txt", "w", encoding="utf-8") as fi:
+TypeError: 'encoding' is an invalid keyword argument for this function
