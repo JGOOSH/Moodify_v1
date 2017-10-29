@@ -1,4 +1,4 @@
-import httplib, urllib, base64
+import httplib, urllib, base64, json
 
 headers = {
     # Request headers. Replace the placeholder key below with your subscription key.
@@ -20,7 +20,14 @@ try:
     conn.request("POST", "/emotion/v1.0/recognize?%s" % params, body, headers)
     response = conn.getresponse()
     data = response.read()
-    print(data)
+    d = json.loads(data)
+    strongest = 'sadness'
+    strongest_val = d[0]['scores']['sadness']
+    for emotion in d[0]['scores']:
+        if d[0]['scores'][emotion] > strongest_val:
+            strongest_val = d[0]['scores'][emotion]
+            strongest = emotion
+    print strongest
     conn.close()
 except Exception as e:
     print("[Errno {0}] {1}".format(e.errno, e.strerror))
